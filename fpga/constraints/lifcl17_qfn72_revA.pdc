@@ -1,0 +1,49 @@
+# ==============================================================================
+# GeckoPod-ModZ: CrossLink-NX LIFCL-17 QFN72 Physical Constraints
+# Target: LIFCL-17 QFN72
+#
+# IMPORTANT:
+#   - This file intentionally does NOT contain guessed package-site assignments.
+#   - Populate ldc_set_location only after checking the official LIFCL-17 pinout
+#     (FPGA-SC-02006) and the QFN72 package/migration documentation.
+#   - Keep timing constraints in the companion .sdc file.
+# ==============================================================================
+
+# ----------------------------------------------------------------------------
+# Electrical standards
+# ----------------------------------------------------------------------------
+# The iPod LCD bus is expected to be ~1.8 V logic. Confirm the selected bank's
+# VCCIO is actually powered at 1.8 V before enabling direct connection.
+
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18} [get_ports clk_sys]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=UP} [get_ports rst_n]
+
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=UP}   [get_ports ipod_wr_n]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=UP}   [get_ports ipod_cs_n]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=DOWN} [get_ports ipod_rs]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=UP}   [get_ports ipod_reset_n]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=DOWN} [get_ports {ipod_db[*]}]
+
+# ----------------------------------------------------------------------------
+# Package locations -- TODO before PCB freeze
+# ----------------------------------------------------------------------------
+# Do not assign sequential QFN package numbers by assumption. The QFN contains
+# power/configuration/D-PHY pins and bank restrictions; arbitrary numbering can
+# collide with non-user pins or split the 16-bit bus across unsuitable banks.
+#
+# Preferred placement goals:
+#   1. Put ipod_db[15:0] and control signals in 1.8-V-capable user-I/O banks.
+#   2. Keep the 16-bit input bus physically compact for routing.
+#   3. Preserve the hardened D-PHY pins required by the AMOLED output.
+#   4. Put clk_sys on a clock-capable input.
+#   5. Reserve programming/configuration/JTAG pins and required power pins.
+#
+# Example syntax once verified:
+# ldc_set_location -site {<OFFICIAL_SITE>} [get_ports ipod_wr_n]
+# ldc_set_location -site {<OFFICIAL_SITE>} [get_ports {ipod_db[0]}]
+
+# ----------------------------------------------------------------------------
+# Notes
+# ----------------------------------------------------------------------------
+# The current RTL is controller-agnostic and should use the ipod_bus_capture
+# top-level naming rather than the earlier ipod_s1d19122_capture assumption.

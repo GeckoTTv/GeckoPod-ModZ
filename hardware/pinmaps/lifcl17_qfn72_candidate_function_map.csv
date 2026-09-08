@@ -1,0 +1,45 @@
+Package_Pin,FPGA_Pin_Name,Assigned_Function,Type,Side,Style,Bank,Voltage,Status,Description
+TBD,TBD,CLK_SYS_IN,Input,Left,Line,TBD,1.8V,UNVERIFIED,Primary clock input; must use official clock-capable QFN72 site
+TBD,TBD,RST_N,Input,Left,Line,TBD,1.8V,UNVERIFIED,Board/FPGA logic reset input; weak pull-up planned
+TBD,TBD,IPOD_RESET_N,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod LCD reset line
+TBD,TBD,IPOD_WR_N,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod LCD bus write strobe (/WR)
+TBD,TBD,IPOD_CS_N,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod LCD bus chip select (/CS)
+TBD,TBD,IPOD_RS,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod LCD register select (RS)
+TBD,TBD,IPOD_RD_N,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod LCD read strobe (/RD); routed for future emulation/debug
+TBD,TBD,IPOD_DB0,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 0
+TBD,TBD,IPOD_DB1,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 1
+TBD,TBD,IPOD_DB2,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 2
+TBD,TBD,IPOD_DB3,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 3
+TBD,TBD,IPOD_DB4,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 4
+TBD,TBD,IPOD_DB5,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 5
+TBD,TBD,IPOD_DB6,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 6
+TBD,TBD,IPOD_DB7,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 7
+TBD,TBD,IPOD_DB8,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 8
+TBD,TBD,IPOD_DB9,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 9
+TBD,TBD,IPOD_DB10,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 10
+TBD,TBD,IPOD_DB11,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 11
+TBD,TBD,IPOD_DB12,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 12
+TBD,TBD,IPOD_DB13,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 13
+TBD,TBD,IPOD_DB14,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 14
+TBD,TBD,IPOD_DB15,Input,Left,Line,TBD,1.8V,UNVERIFIED,iPod parallel data bit 15
+TBD,TBD,PANEL_RESET_N,Output,Right,Line,TBD,1.8V,UNVERIFIED,AMOLED display reset signal
+TBD,TBD,PANEL_TE,Input,Right,Line,TBD,1.8V,UNVERIFIED,AMOLED tearing-effect input
+FIXED_DPHY,TBD,MIPI_CLK_P,Output,Right,Differential,DPHY,TBD,UNVERIFIED,Hardened D-PHY DSI clock positive; exact package pin fixed by D-PHY mapping/IP
+FIXED_DPHY,TBD,MIPI_CLK_N,Output,Right,Differential,DPHY,TBD,UNVERIFIED,Hardened D-PHY DSI clock negative; exact package pin fixed by D-PHY mapping/IP
+FIXED_DPHY,TBD,MIPI_D0_P,Bidi,Right,Differential,DPHY,TBD,UNVERIFIED,Hardened D-PHY DSI data lane 0 positive
+FIXED_DPHY,TBD,MIPI_D0_N,Bidi,Right,Differential,DPHY,TBD,UNVERIFIED,Hardened D-PHY DSI data lane 0 negative
+FIXED_DPHY,TBD,MIPI_D1_P,Bidi,Right,Differential,DPHY,TBD,UNVERIFIED,Hardened D-PHY DSI data lane 1 positive
+FIXED_DPHY,TBD,MIPI_D1_N,Bidi,Right,Differential,DPHY,TBD,UNVERIFIED,Hardened D-PHY DSI data lane 1 negative
+TBD,TBD,VCC_CORE,Power_in,Top,Line,Power,TBD,REQUIRED_FROM_DATASHEET,Core supply pin(s); populate every required package occurrence
+TBD,TBD,VCCAUX,Power_in,Top,Line,Power,TBD,REQUIRED_FROM_DATASHEET,Auxiliary supply pin(s); populate every required package occurrence
+TBD,TBD,VCCIO_BANK0,Power_in,Top,Line,0,1.8V,REQUIRED_FROM_DATASHEET,Bank 0 VCCIO if used for 1.8-V logic
+TBD,TBD,VCCIO_BANK1,Power_in,Top,Line,1,1.8V,REQUIRED_FROM_DATASHEET,Bank 1 VCCIO if used for 1.8-V logic
+TBD,TBD,VCCIO_BANK2,Power_in,Top,Line,2,TBD,REQUIRED_FROM_DATASHEET,Bank 2 / D-PHY-related I/O supply as defined by official package docs
+TBD,TBD,DPHY_SUPPLY_REF,Power_in,Top,Line,DPHY,TBD,REQUIRED_FROM_DATASHEET,Placeholder row: expand into every D-PHY-specific supply/reference required by official docs
+TBD,TBD,GND,Power_in,Bottom,Line,Power,0V,REQUIRED_FROM_DATASHEET,Expand into every package ground pin
+EP,TBD,GND_EP,Power_in,Bottom,Line,Power,0V,VERIFY_PACKAGE,Exposed pad; verify official QFN72 package-DD numbering/name before footprint freeze
+TBD,TBD,JTAG_TCK,Input,Bottom,Line,Config,TBD,REQUIRED_FROM_DATASHEET,Programming/debug pin; exact site/name from official pinout
+TBD,TBD,JTAG_TMS,Input,Bottom,Line,Config,TBD,REQUIRED_FROM_DATASHEET,Programming/debug pin; exact site/name from official pinout
+TBD,TBD,JTAG_TDI,Input,Bottom,Line,Config,TBD,REQUIRED_FROM_DATASHEET,Programming/debug pin if present/required by selected configuration mode
+TBD,TBD,JTAG_TDO,Output,Bottom,Line,Config,TBD,REQUIRED_FROM_DATASHEET,Programming/debug pin if present/required by selected configuration mode
+TBD,TBD,CONFIG_PINS,Bidi,Bottom,Line,Config,TBD,REQUIRED_FROM_DATASHEET,Placeholder: expand all configuration pins from official LIFCL-17 QFN72 documentation

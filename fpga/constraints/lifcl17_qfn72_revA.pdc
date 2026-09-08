@@ -1,49 +1,100 @@
 # ==============================================================================
 # GeckoPod-ModZ: CrossLink-NX LIFCL-17 QFN72 Physical Constraints
-# Target: LIFCL-17 QFN72
+# Target device: LIFCL-17-6SG72C (CrossLink-NX, QFN72)
 #
-# IMPORTANT:
-#   - This file intentionally does NOT contain guessed package-site assignments.
-#   - Populate ldc_set_location only after checking the official LIFCL-17 pinout
-#     (FPGA-SC-02006) and the QFN72 package/migration documentation.
-#   - Keep timing constraints in the companion .sdc file.
+# STATUS: REV-A LOGICAL CONSTRAINT TEMPLATE — NOT PCB-AUTHORITATIVE
+#
+# This file intentionally contains NO guessed package-site assignments.
+# Populate ldc_set_location only from Lattice's official LIFCL-17 QFN72 pinout,
+# package-DD, and D-PHY documentation after bank/power verification.
+# Timing constraints belong in lifcl17_revA.sdc.
 # ==============================================================================
 
-# ----------------------------------------------------------------------------
-# Electrical standards
-# ----------------------------------------------------------------------------
-# The iPod LCD bus is expected to be ~1.8 V logic. Confirm the selected bank's
-# VCCIO is actually powered at 1.8 V before enabling direct connection.
-
+# -----------------------------------------------------------------------------
+# 1. System clock and reset
+# -----------------------------------------------------------------------------
 ldc_set_port -iobuf {IO_TYPE=LVCMOS18} [get_ports clk_sys]
 ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=UP} [get_ports rst_n]
 
+# TODO after official pin-map verification:
+# ldc_set_location -site {<CLOCK_CAPABLE_SITE>} [get_ports clk_sys]
+# ldc_set_location -site {<USER_IO_SITE>}       [get_ports rst_n]
+
+# -----------------------------------------------------------------------------
+# 2. iPod 5G/5.5G LCD parallel bus — 1.8 V
+# -----------------------------------------------------------------------------
 ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=UP}   [get_ports ipod_wr_n]
 ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=UP}   [get_ports ipod_cs_n]
 ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=DOWN} [get_ports ipod_rs]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=UP}   [get_ports ipod_rd_n]
 ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=UP}   [get_ports ipod_reset_n]
 ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=DOWN} [get_ports {ipod_db[*]}]
 
-# ----------------------------------------------------------------------------
-# Package locations -- TODO before PCB freeze
-# ----------------------------------------------------------------------------
-# Do not assign sequential QFN package numbers by assumption. The QFN contains
-# power/configuration/D-PHY pins and bank restrictions; arbitrary numbering can
-# collide with non-user pins or split the 16-bit bus across unsuitable banks.
+# Physical-placement goals:
+#   - Keep DB[15:0] physically compact.
+#   - Place controls in the same compatible 1.8-V I/O region when practical.
+#   - Preserve all fixed D-PHY resources and configuration pins.
+#   - Confirm the selected VCCIO rails are actually powered at 1.8 V.
+
+# -----------------------------------------------------------------------------
+# 3. AMOLED panel sideband control — nominal 1.8 V logic
+# -----------------------------------------------------------------------------
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=UP}   [get_ports panel_reset_n]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=DOWN} [get_ports panel_te]
+
+# -----------------------------------------------------------------------------
+# 4. MIPI D-PHY / DSI
+# -----------------------------------------------------------------------------
+# DO NOT assign arbitrary package sites here.
+# CrossLink-NX hardened D-PHY lane locations are fixed by the selected D-PHY
+# quad / IP configuration and must match Lattice's official pin mapping.
 #
-# Preferred placement goals:
-#   1. Put ipod_db[15:0] and control signals in 1.8-V-capable user-I/O banks.
-#   2. Keep the 16-bit input bus physically compact for routing.
-#   3. Preserve the hardened D-PHY pins required by the AMOLED output.
-#   4. Put clk_sys on a clock-capable input.
-#   5. Reserve programming/configuration/JTAG pins and required power pins.
+# The exact generated-IP wrapper may also dictate port names and I/O attributes.
+# Keep these logical names only as the project-facing interface until the
+# D-PHY/DSI IP configuration is frozen.
 #
-# Example syntax once verified:
+# Logical ports expected by the current board plan:
+#   mipi_clk_p / mipi_clk_n
+#   mipi_d0_p  / mipi_d0_n
+#   mipi_d1_p  / mipi_d1_n
+#
+# Do NOT assume that setting IO_TYPE=MIPI_DPHY on arbitrary user I/O converts
+# them into hardened D-PHY lanes.
+
+# -----------------------------------------------------------------------------
+# 5. Package/power/configuration requirements
+# -----------------------------------------------------------------------------
+# The KiCad symbol and PCB must include every device-required pin from the
+# official QFN72 package documentation, including as applicable:
+#   - all VCC / core rails
+#   - all VCCAUX / auxiliary rails
+#   - every VCCIO bank supply
+#   - all GND pins and exposed pad
+#   - configuration pins
+#   - JTAG/programming/debug pins
+#   - D-PHY-specific supplies/references
+#
+# These are device pins, not HDL ports, so they are not represented by
+# get_ports statements in this PDC.
+
+# -----------------------------------------------------------------------------
+# 6. Package locations — TODO BEFORE SCHEMATIC/PCB FREEZE
+# -----------------------------------------------------------------------------
+# Example syntax ONLY after verification:
 # ldc_set_location -site {<OFFICIAL_SITE>} [get_ports ipod_wr_n]
 # ldc_set_location -site {<OFFICIAL_SITE>} [get_ports {ipod_db[0]}]
+# ldc_set_location -site {<OFFICIAL_SITE>} [get_ports panel_reset_n]
+#
+# Required verification sources:
+#   - LIFCL-17 device pinout
+#   - QFN72 package / pin-migration data
+#   - CrossLink-NX package-DD data
+#   - CrossLink-NX hardened D-PHY usage / IP documentation
 
-# ----------------------------------------------------------------------------
-# Notes
-# ----------------------------------------------------------------------------
-# The current RTL is controller-agnostic and should use the ipod_bus_capture
-# top-level naming rather than the earlier ipod_s1d19122_capture assumption.
+# -----------------------------------------------------------------------------
+# 7. RTL naming note
+# -----------------------------------------------------------------------------
+# The capture path is intentionally controller-agnostic. Do not use the earlier
+# ipod_s1d19122_capture name as a hardware assumption; the project currently
+# uses ipod_bus_capture / trace-parser terminology until the LCD command model
+# is verified from real captures.
